@@ -1,32 +1,57 @@
 <template>
   <a-table
     :columns="columns"
-    :row-key="(record) => record.uuid"
+    :row-key="(record) => record.id"
     :data-source="data"
     :pagination="pagination"
     :loading="loading"
     @change="handleTableChange"
-  ></a-table>
+  >
+    <template #bodyCell="{ column, recored }">
+      <template v-if="column.key === 'sex'">
+        <span v-if="Number(recored.sex) === 0">
+          男
+        </span>
+        <span v-else>女</span>
+      </template>
+    </template>
+  </a-table>
 </template>
 <script>
   import { getList } from '@/api/userlist'
   const columns = [
     {
-      title: 'title',
-      dataIndex: 'title',
+      title: '名称',
+      dataIndex: 'name',
     },
     {
-      title: 'description',
-      dataIndex: 'description',
+      title: '性别',
+      dataIndex: 'sex',
     },
     {
-      title: 'author',
-      dataIndex: 'author',
+      title: '年龄',
+      dataIndex: 'age',
     },
     {
-      title: 'datetime',
-      dataIndex: 'datetime',
+      title: '手机',
+      dataIndex: 'phone',
     },
+    {
+      title: '微信',
+      dataIndex: 'wechart',
+    },
+    {
+      title: '实名',
+      dataIndex: 'realName',
+    },
+    {
+      title: '注册时间',
+      dataIndex: 'creatTime',
+    },
+    {
+      title: '操作',
+      dataIndex: 'option',
+    }
   ]
 
   export default {
@@ -55,14 +80,11 @@
       },
       fetch() {
         this.loading = true
-        getList({
-          pageSize: this.pagination.pageSize,
-          current: this.pagination.current,
-        }).then(({ data, total }) => {
+        getList(this.pagination).then(({ data }) => {
           const pagination = { ...this.pagination }
-          pagination.total = total
+          pagination.total = data.total
           this.loading = false
-          this.data = data
+          this.data = data.records
           this.pagination = pagination
         })
       },
