@@ -29,7 +29,6 @@
               <a-button
                 type="primary"
                 html-type="submit"
-                :disabled="form.userAccount === '' || form.userPwd === ''"
               >
                 登录
               </a-button>
@@ -60,7 +59,7 @@
       return {
         form: {
           userAccount: '',
-          userAccount: '',
+          userPwd: '',
         },
         redirect: undefined,
         dependencies: dependencies,

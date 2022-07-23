@@ -8,7 +8,7 @@
     <a-layout-sider
       collapsible
       class="vab-sider"
-      width="250"
+      width="210"
       v-model:collapsed="collapse"
       :class="classObj"
       :trigger="null"
@@ -20,6 +20,7 @@
         mode="inline"
         v-model:selectedKeys="selectedKeys"
         v-model:openKeys="openKeys"
+        @click="clikMenu"
       >
         <vab-menu v-for="route in routes" :key="route.path" :item="route" />
       </a-menu>
@@ -93,10 +94,12 @@
     watch: {
       $route: {
         handler({ path, matched }) {
-          matched[0].children.length > 1
-            ? (this.selectedKeys = [path])
-            : (this.selectedKeys = [matched[0].path])
+          // matched[0].children.length > 1
+          //   ? (this.selectedKeys = [path])
+          //   : (this.selectedKeys = [matched[0].path])
+          this.selectedKeys = [path]
           this.openKeys = [matched[0].path]
+          console.log(path, matched)
         },
         immediate: true,
       },
@@ -124,6 +127,9 @@
           this.width = width
         }
       },
+      clikMenu(val) {
+        console.log(val)
+      }
     },
   }
 </script>
@@ -139,7 +145,7 @@
       }
     }
     .vab-layout {
-      padding-left: 250px;
+      padding-left: 210px;
       transition: all 0.2s;
     }
     .vab-mobile-layout {

@@ -2,13 +2,16 @@
   <div class="vab-avatar">
     <a-dropdown>
       <span class="ant-dropdown-link">
-        <a-avatar :src="avatar" />
+        <a-avatar>
+          <template #icon>
+            <UserOutlined />
+          </template>
+        </a-avatar>
         {{ username }}
         <DownOutlined />
       </span>
       <template v-slot:overlay>
         <a-menu>
-          <a-menu-item @click="buy">付费版购买</a-menu-item>
           <a-menu-item @click="logout">退出登录</a-menu-item>
         </a-menu>
       </template>
@@ -18,7 +21,7 @@
 
 <script>
   import { recordRoute } from '@/config'
-  import { DownOutlined } from '@ant-design/icons-vue'
+  import { DownOutlined, UserOutlined } from '@ant-design/icons-vue'
 
   import { useStore } from 'vuex'
   import { computed } from 'vue'
@@ -26,7 +29,7 @@
 
   export default {
     name: 'VabAvatar',
-    components: { DownOutlined },
+    components: { DownOutlined, UserOutlined },
     setup() {
       const store = useStore()
       const router = useRouter()
@@ -41,15 +44,10 @@
         }
       }
 
-      const buy = () => {
-        window.open('http://vue-admin-beautiful.com/authorization/')
-      }
-
       return {
-        avatar: computed(() => store.getters['user/avatar']),
+        // avatar: computed(() => store.getters['user/avatar']),
         username: computed(() => store.getters['user/username']),
         logout,
-        buy,
       }
     },
   }

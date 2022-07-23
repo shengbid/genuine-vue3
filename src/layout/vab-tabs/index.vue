@@ -72,8 +72,9 @@
       },
     },
     created() {
-      this.initAffixTabs(this.routes)
+      // this.initAffixTabs(this.routes)
       this.addTabs(this.$route)
+      console.log(this.$route, this.visitedRoutes)
     },
     methods: {
       ...mapActions({
@@ -179,6 +180,8 @@
   .vab-tabs {
     padding: 0 @vab-margin;
     background: #ffffff;
+    border-top: 1px solid #ddd;
+    padding-top: 5px;
     &-left-panel {
       float: left;
       width: calc(100% - 52px - @vab-margin - @vab-margin);
