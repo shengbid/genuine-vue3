@@ -74,7 +74,6 @@
     created() {
       // this.initAffixTabs(this.routes)
       this.addTabs(this.$route)
-      console.log(this.$route, this.visitedRoutes)
     },
     methods: {
       ...mapActions({

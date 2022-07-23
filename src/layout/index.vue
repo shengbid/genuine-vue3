@@ -99,7 +99,7 @@
           //   : (this.selectedKeys = [matched[0].path])
           this.selectedKeys = [path]
           this.openKeys = [matched[0].path]
-          console.log(path, matched)
+          // console.log(path, matched)
         },
         immediate: true,
       },
@@ -129,7 +129,7 @@
       },
       clikMenu(val) {
         console.log(val)
-      }
+      },
     },
   }
 </script>
