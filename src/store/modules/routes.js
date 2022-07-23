@@ -7,7 +7,7 @@ import { getRouterList } from '@/api/router'
 import { convertRouter, filterRoutes } from '@/utils/routes'
 
 const state = () => ({
-  routes: [],
+  routes: filterRoutes([...constantRoutes, ...asyncRoutes]),
   partialRoutes: [],
 })
 const getters = {

@@ -81,7 +81,8 @@ instance.interceptors.response.use(
     if (loadingInstance) loadingInstance.close()
 
     const { data, config } = response
-    const { code, msg } = data
+    const { msg } = data
+    const code = Number(data.code)
     // 操作正常Code数组
     const codeVerificationArray = isArray(successCode)
       ? [...successCode]

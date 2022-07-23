@@ -31,7 +31,7 @@ export function getUserInfo(accessToken) {
   return new Promise((reslove) => {
     reslove({
       data: {
-        username: 'root', 
+        username: '管理员', 
         avatar: '', 
       }
     })

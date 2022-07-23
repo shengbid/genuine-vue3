@@ -5,11 +5,7 @@
 import router from '@/router'
 import store from '@/store'
 import getPageTitle from '@/utils/pageTitle'
-import {
-  loginInterception,
-  recordRoute,
-  routesWhiteList,
-} from '@/config'
+import { loginInterception, recordRoute, routesWhiteList } from '@/config'
 
 router.beforeEach(async (to, from, next) => {
   let hasToken = store.getters['user/accessToken']
@@ -20,7 +16,17 @@ router.beforeEach(async (to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/' })
     } else {
-      next()
+      const hasPermission = store.getters['user/username']
+      if (hasPermission) {
+        next()
+      } else {
+        try {
+          await store.dispatch('user/getUserInfo')
+          next()
+        } catch (error) {
+          await store.dispatch('user/resetAll')
+        }
+      }
     }
   } else {
     if (routesWhiteList.indexOf(to.path) !== -1) {

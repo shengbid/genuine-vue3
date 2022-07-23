@@ -265,3 +265,13 @@ export const off = (function () {
     }
   }
 })()
+
+
+// 处理page参数
+export const handlePage = (data) => {
+  return {
+    ...data,
+    pageNo: data.current,
+    pageSize: data.pageSize,
+  }
+}
