@@ -1,71 +1,115 @@
 <template>
-  <a-table
-    :columns="columns"
-    :row-key="(record) => record.uuid"
-    :data-source="data"
-    :pagination="pagination"
-    :loading="loading"
-    @change="handleTableChange"
-  ></a-table>
+  <a-table :columns="columns" :data-source="data">
+    <template #headerCell="{ column }">
+      <template v-if="column.key === 'name'">
+        <span>
+          <smile-outlined />
+          Name
+        </span>
+      </template>
+    </template>
+    <template #bodyCell="{ column, record }">
+      <template v-if="column.key === 'name'">
+        <a>
+          {{ record.name }}
+        </a>
+      </template>
+      <template v-else-if="column.key === 'tags'">
+        <span>
+          <a-tag
+            v-for="tag in record.tags"
+            :key="tag"
+            :color="
+              tag === 'loser'
+                ? 'volcano'
+                : tag.length > 5
+                ? 'geekblue'
+                : 'green'
+            "
+          >
+            {{ tag.toUpperCase() }}
+          </a-tag>
+        </span>
+      </template>
+      <template v-else-if="column.key === 'action'">
+        <span>
+          <a>Invite 一 {{ record.name }}</a>
+          <a-divider type="vertical" />
+          <a>Delete</a>
+          <a-divider type="vertical" />
+          <a class="ant-dropdown-link">
+            More actions
+            <down-outlined />
+          </a>
+        </span>
+      </template>
+    </template>
+  </a-table>
 </template>
 <script>
-  import { getList } from '@/api/userlist'
+  import { SmileOutlined, DownOutlined } from '@ant-design/icons-vue'
+  import { defineComponent } from 'vue'
   const columns = [
     {
-      title: 'title',
-      dataIndex: 'title',
+      name: 'Name',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
-      title: 'description',
-      dataIndex: 'description',
+      title: 'Age',
+      dataIndex: 'age',
+      key: 'age',
     },
     {
-      title: 'author',
-      dataIndex: 'author',
+      title: 'Address',
+      dataIndex: 'address',
+      key: 'address',
     },
     {
-      title: 'datetime',
-      dataIndex: 'datetime',
+      title: 'Tags',
+      key: 'tags',
+      dataIndex: 'tags',
+    },
+    {
+      title: 'Action',
+      key: 'action',
     },
   ]
 
-  export default {
-    data() {
+  const data = [
+    {
+      key: '1',
+      name: 'John Brown',
+      age: 32,
+      address: 'New York No. 1 Lake Park',
+      tags: ['nice', 'developer'],
+    },
+    {
+      key: '2',
+      name: 'Jim Green',
+      age: 42,
+      address: 'London No. 1 Lake Park',
+      tags: ['loser'],
+    },
+    {
+      key: '3',
+      name: 'Joe Black',
+      age: 32,
+      address: 'Sidney No. 1 Lake Park',
+      tags: ['cool', 'teacher'],
+    },
+  ]
+
+  export default defineComponent({
+    components: {
+      SmileOutlined,
+      DownOutlined,
+    },
+    setup() {
       return {
-        data: [],
-        pagination: {
-          showLessItems: true,
-          showQuickJumper: true,
-          showSizeChanger: true,
-        },
-        query: {},
-        loading: false,
+        data,
         columns,
       }
     },
-    mounted() {
-      this.fetch()
-    },
-    methods: {
-      handleTableChange(pagination) {
-        const pager = { ...this.pagination }
-        pager.current = pagination.current
-        this.pagination = pager
-        this.fetch()
-      },
-      fetch() {
-        this.loading = true
-        getList({
-          pageSize: this.pagination.pageSize,
-          current: this.pagination.current,
-        }).then(({ data, total }) => {
-          const pagination = { ...this.pagination }
-          pagination.total = total
-          this.loading = false
-          this.data = data
-          this.pagination = pagination
-        })
-      },
-    },
-  }
+  })
 </script>
