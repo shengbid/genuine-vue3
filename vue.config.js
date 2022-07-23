@@ -27,7 +27,7 @@ const FileManagerPlugin = require('filemanager-webpack-plugin')
 const dayjs = require('dayjs')
 const date = dayjs().format('YYYY_M_D')
 const time = dayjs().format('YYYY-M-D HH:mm:ss')
-process.env.VUE_APP_TITLE = title || 'vue-admin-beautiful'
+process.env.VUE_APP_TITLE = title || 'genine-admin'
 process.env.VUE_APP_AUTHOR = author || 'chuzhixin'
 process.env.VUE_APP_UPDATE_TIME = time
 process.env.VUE_APP_VERSION = version
@@ -113,7 +113,7 @@ module.exports = {
         chunks: 'all',
         cacheGroups: {
           libs: {
-            name: 'vue-admin-beautiful-libs',
+            name: 'vue-admin',
             test: /[\\/]node_modules[\\/]/,
             priority: 10,
             chunks: 'initial',
