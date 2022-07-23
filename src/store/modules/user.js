@@ -104,11 +104,8 @@ const actions = {
       message.error(`验证失败，请重新登录...`)
       return false
     }
-    let { username, avatar, roles, ability } = data
-    if (username && roles && Array.isArray(roles)) {
-      dispatch('acl/setRole', roles, { root: true })
-      if (ability && ability.length > 0)
-        dispatch('acl/setAbility', ability, { root: true })
+    let { username, avatar } = data
+    if (username) {
       commit('setUsername', username)
       commit('setAvatar', avatar)
     } else {
@@ -132,9 +129,9 @@ const actions = {
    */
   async resetAll({ dispatch }) {
     await dispatch('setAccessToken', '')
-    await dispatch('acl/setFull', false, { root: true })
-    await dispatch('acl/setRole', [], { root: true })
-    await dispatch('acl/setAbility', [], { root: true })
+    // await dispatch('acl/setFull', false, { root: true })
+    // await dispatch('acl/setRole', [], { root: true })
+    // await dispatch('acl/setAbility', [], { root: true })
     removeAccessToken()
   },
   /**

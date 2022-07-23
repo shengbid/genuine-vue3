@@ -1,43 +1,55 @@
 import request from '@/utils/request'
 import { tokenName } from '@/config'
 
+// 登陆
 export async function login(data) {
   return request({
-    url: '/login',
+    url: '/gsh/login',
     method: 'post',
     data,
   })
 }
 
-export async function socialLogin(data) {
+// 注册
+export async function register(data) {
   return request({
-    url: '/socialLogin',
+    url: '/gsh/saveTGshUser',
     method: 'post',
     data,
   })
 }
-
+// 获取登陆用户信息
 export function getUserInfo(accessToken) {
   //此处为了兼容mock.js使用data传递accessToken，如果使用mock可以走headers
-  return request({
-    url: '/userInfo',
-    method: 'post',
-    data: {
-      [tokenName]: accessToken,
-    },
+  // return request({
+  //   url: '/userInfo',
+  //   method: 'post',
+  //   data: {
+  //     [tokenName]: accessToken,
+  //   },
+  // })
+  return new Promise((reslove) => {
+    reslove({
+      data: {
+        username: 'root', 
+        avatar: '', 
+      }
+    })
   })
 }
 
-export function logout() {
+// 退出登录
+export function logout(data) {
   return request({
-    url: '/logout',
+    url: '/gsh/logOut',
     method: 'post',
+    data
   })
 }
-
-export function register() {
+// 获取验证码
+export function getFakeCaptcha(params) {
   return request({
-    url: '/register',
-    method: 'post',
+    url: '/email/sendSimpleEmail',
+    params,
   })
 }

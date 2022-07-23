@@ -8,7 +8,7 @@
           <div class="login-container-title">欢迎来到 {{ title }}</div>
           <a-form :model="form" @submit="handleSubmit" @submit.prevent>
             <a-form-item>
-              <a-input v-model:value="form.username" placeholder="Username">
+              <a-input v-model:value="form.userAccount" placeholder="Username">
                 <template v-slot:prefix>
                   <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
                 </template>
@@ -16,7 +16,7 @@
             </a-form-item>
             <a-form-item>
               <a-input
-                v-model:value="form.password"
+                v-model:value="form.userPwd"
                 type="password"
                 placeholder="Password"
               >
@@ -29,7 +29,7 @@
               <a-button
                 type="primary"
                 html-type="submit"
-                :disabled="form.username === '' || form.password === ''"
+                :disabled="form.userAccount === '' || form.userPwd === ''"
               >
                 登录
               </a-button>
@@ -59,8 +59,8 @@
     data() {
       return {
         form: {
-          username: '',
-          password: '',
+          userAccount: '',
+          userAccount: '',
         },
         redirect: undefined,
         dependencies: dependencies,
@@ -81,13 +81,7 @@
         immediate: true,
       },
     },
-    mounted() {
-      this.form.username = 'admin'
-      this.form.password = '123456'
-      /*  setTimeout(() => {
-        this.handleSubmit()
-      }, 3000) */
-    },
+
     methods: {
       ...mapActions({
         login: 'user/login',

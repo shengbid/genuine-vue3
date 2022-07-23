@@ -36,13 +36,13 @@ const resolve = (dir) => {
   return path.join(__dirname, dir)
 }
 
-const mockServer = () => {
-  if (process.env.NODE_ENV === 'development') {
-    return require('./mock/mockServer.js')
-  } else {
-    return ''
-  }
-}
+// const mockServer = () => {
+//   if (process.env.NODE_ENV === 'development') {
+//     return require('./mock/mockServer.js')
+//   } else {
+//     return ''
+//   }
+// }
 
 module.exports = {
   publicPath,
@@ -53,24 +53,24 @@ module.exports = {
   devServer: {
     hot: true,
     port: devPort,
-    open: true,
+    // open: true,
     noInfo: false,
     overlay: {
-      warnings: true,
+      warnings: false,
       errors: true,
     },
     // 注释掉的地方是前端配置代理访问后端的示例
-    // proxy: {
-    //   [baseURL]: {
-    //     target: `http://你的后端接口地址`,
-    //     ws: true,
-    //     changeOrigin: true,
-    //     pathRewrite: {
-    //       ["^/" + baseURL]: "",
-    //     },
-    //   },
-    // },
-    after: mockServer(),
+    proxy: {
+      '/api': {
+        target: `http://39.108.168.143:6179/`,
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          ["^/" + "api"]: "",
+        },
+      },
+    },
+    // after: mockServer(),
   },
   configureWebpack() {
     return {
