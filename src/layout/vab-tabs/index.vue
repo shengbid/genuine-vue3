@@ -211,6 +211,9 @@
           color: #1890ff !important;
         }
       }
+      .ant-tabs-nav::before {
+        border-bottom: 0;
+      }
     }
   }
 </style>
