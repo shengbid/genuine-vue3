@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { tokenName } from '@/config'
+// import { tokenName } from '@/config'
 
 // 登陆
 export async function login(data) {
@@ -31,9 +31,9 @@ export function getUserInfo(accessToken) {
   return new Promise((reslove) => {
     reslove({
       data: {
-        username: '管理员', 
-        avatar: '', 
-      }
+        username: '管理员',
+        avatar: '',
+      },
     })
   })
 }
@@ -43,7 +43,7 @@ export function logout(data) {
   return request({
     url: '/gsh/logOut',
     method: 'post',
-    data
+    data,
   })
 }
 // 获取验证码

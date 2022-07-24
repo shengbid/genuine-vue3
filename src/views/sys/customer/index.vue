@@ -1,115 +1,153 @@
 <template>
-  <a-table :columns="columns" :data-source="data">
-    <template #headerCell="{ column }">
-      <template v-if="column.key === 'name'">
-        <span>
-          <smile-outlined />
-          Name
-        </span>
+  <div>
+    <a-table
+      :columns="columns"
+      :row-key="(record) => record.id"
+      :data-source="data"
+      :pagination="pagination"
+      :loading="loading"
+      @change="handleTableChange"
+    >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'sex'">
+          <span v-if="Number(record.sex) === 0">男</span>
+          <span v-else>女</span>
+        </template>
+        <template v-if="column.dataIndex === 'option'">
+          <a-space>
+            <a @click="toDetail(record.id)">详情</a>
+            <a-popconfirm
+              :title="
+                record.isFreeze === '0' ? '是否确定冻结?' : '是否确定解冻?'
+              "
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm="confirm(record)"
+            >
+              <a>
+                {{ record.isFreeze === '0' ? '冻结' : '解冻' }}
+              </a>
+            </a-popconfirm>
+            <a @click="openBroad(record.id)">广播</a>
+          </a-space>
+        </template>
       </template>
-    </template>
-    <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'name'">
-        <a>
-          {{ record.name }}
-        </a>
-      </template>
-      <template v-else-if="column.key === 'tags'">
-        <span>
-          <a-tag
-            v-for="tag in record.tags"
-            :key="tag"
-            :color="
-              tag === 'loser'
-                ? 'volcano'
-                : tag.length > 5
-                ? 'geekblue'
-                : 'green'
-            "
-          >
-            {{ tag.toUpperCase() }}
-          </a-tag>
-        </span>
-      </template>
-      <template v-else-if="column.key === 'action'">
-        <span>
-          <a>Invite 一 {{ record.name }}</a>
-          <a-divider type="vertical" />
-          <a>Delete</a>
-          <a-divider type="vertical" />
-          <a class="ant-dropdown-link">
-            More actions
-            <down-outlined />
-          </a>
-        </span>
-      </template>
-    </template>
-  </a-table>
+    </a-table>
+
+    <BroadCast :visible="visible" :ids="ids" @handleCancel="handleCancel" />
+    <Detail
+      :visible="detailVisible"
+      :id="detailId"
+      @handleCancel="detailCancel"
+    />
+  </div>
 </template>
 <script>
-  import { SmileOutlined, DownOutlined } from '@ant-design/icons-vue'
-  import { defineComponent } from 'vue'
+  import { message } from 'ant-design-vue'
+  import { getList, toFreeze } from '@/api/userlist'
+  import BroadCast from '@/components/broadcast.vue'
+  import Detail from '@/components/Detail.vue'
   const columns = [
     {
-      name: 'Name',
+      title: '商户名称',
       dataIndex: 'name',
-      key: 'name',
     },
     {
-      title: 'Age',
+      title: '性别',
+      dataIndex: 'sex',
+    },
+    {
+      title: '年龄',
       dataIndex: 'age',
-      key: 'age',
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: '手机',
+      dataIndex: 'phone',
     },
     {
-      title: 'Tags',
-      key: 'tags',
-      dataIndex: 'tags',
+      title: '微信',
+      dataIndex: 'wechart',
     },
     {
-      title: 'Action',
-      key: 'action',
+      title: '公司名称',
+      dataIndex: 'realName',
+    },
+    {
+      title: '入驻时间',
+      dataIndex: 'creatTime',
+    },
+    {
+      title: '操作',
+      dataIndex: 'option',
+      key: 'option',
     },
   ]
 
-  const data = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-      tags: ['loser'],
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
-      tags: ['cool', 'teacher'],
-    },
-  ]
-
-  export default defineComponent({
+  export default {
     components: {
-      SmileOutlined,
-      DownOutlined,
+      BroadCast,
+      Detail,
     },
-    setup() {
+    data() {
       return {
-        data,
+        data: [],
+        pagination: {
+          showLessItems: true,
+          showQuickJumper: true,
+          showSizeChanger: true,
+          current: 1,
+          pageSize: 10,
+        },
+        query: {},
+        loading: false,
         columns,
+        visible: false,
+        detailVisible: false,
+        ids: [],
+        detailId: null,
       }
     },
-  })
+    mounted() {
+      this.fetch()
+    },
+    methods: {
+      handleTableChange(pagination) {
+        this.pagination = pagination
+        this.fetch()
+      },
+      fetch() {
+        this.loading = true
+        getList(this.pagination, 1).then(({ data }) => {
+          const pagination = { ...this.pagination }
+          pagination.total = Number(data.total)
+          this.loading = false
+          this.data = data.records
+          this.pagination = pagination
+        })
+      },
+      async confirm(item) {
+        const text = item.isFreeze === '0' ? '冻结成功!' : '解冻成功!'
+        await toFreeze(item.id, item.isFreeze === '0' ? 1 : 0)
+        message.success(text)
+        this.fetch()
+      },
+      toDetail(id) {
+        this.detailVisible = true
+        this.detailId = id
+      },
+      openBroad(id) {
+        this.visible = true
+        this.ids = [id]
+      },
+      handleCancel(isSuccess) {
+        this.visible = false
+        if (isSuccess) {
+          message.success('留言成功')
+        }
+      },
+      detailCancel() {
+        this.detailVisible = false
+      },
+    },
+  }
 </script>

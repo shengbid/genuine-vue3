@@ -1,11 +1,14 @@
 import request from '@/utils/request'
-import {handlePage} from'@/utils'
+import { handlePage } from '@/utils'
 
-export function getList(params) {
+export function getList(params, type) {
   return request({
     url: '/gsh/listByTGshUser',
     method: 'get',
-    params: handlePage(params)
+    params: {
+      ...handlePage(params),
+      type,
+    },
   })
 }
 
@@ -22,4 +25,9 @@ export function toBatchMassage(data) {
     method: 'post',
     data,
   })
+}
+
+// 获取用户详情
+export async function getUserInfo(id) {
+  return request(`/gsh/gshUserDetail/${id}`)
 }
