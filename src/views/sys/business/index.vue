@@ -1,31 +1,51 @@
 <template>
-  <a-table
-    :columns="columns"
-    :row-key="(record) => record.uuid"
-    :data-source="data"
-    :pagination="pagination"
-    :loading="loading"
-    @change="handleTableChange"
-  ></a-table>
+  <div>
+    <a-table
+      :columns="columns"
+      :row-key="(record) => record.id"
+      :data-source="data"
+      :pagination="pagination"
+      :loading="loading"
+      @change="handleTableChange"
+    >
+      <template #bodyCell="{ column }">
+        <template v-if="column.dataIndex === 'option'">
+          <a-space>
+            <a>编辑</a>
+          </a-space>
+        </template>
+      </template>
+    </a-table>
+  </div>
 </template>
 <script>
-  import { getList } from '@/api/userlist'
+  import { getList } from '@/api/business'
   const columns = [
     {
-      title: 'title',
-      dataIndex: 'title',
+      title: '业务类型',
+      dataIndex: 'name',
     },
     {
-      title: 'description',
-      dataIndex: 'description',
+      title: '业务标题',
+      dataIndex: 'age',
     },
     {
-      title: 'author',
-      dataIndex: 'author',
+      title: '发布时间',
+      dataIndex: 'time',
     },
     {
-      title: 'datetime',
-      dataIndex: 'datetime',
+      title: '发布人',
+      dataIndex: 'time',
+    },
+    {
+      title: '状态',
+      dataIndex: 'time',
+    },
+    {
+      title: '操作',
+      dataIndex: 'option',
+      key: 'option',
+      width: 110,
     },
   ]
 
@@ -37,6 +57,8 @@
           showLessItems: true,
           showQuickJumper: true,
           showSizeChanger: true,
+          current: 1,
+          pageSize: 10,
         },
         query: {},
         loading: false,
@@ -48,21 +70,16 @@
     },
     methods: {
       handleTableChange(pagination) {
-        const pager = { ...this.pagination }
-        pager.current = pagination.current
-        this.pagination = pager
+        this.pagination = pagination
         this.fetch()
       },
       fetch() {
         this.loading = true
-        getList({
-          pageSize: this.pagination.pageSize,
-          current: this.pagination.current,
-        }).then(({ data, total }) => {
+        getList(this.pagination, 1).then(({ data }) => {
           const pagination = { ...this.pagination }
-          pagination.total = total
+          pagination.total = Number(data.total)
           this.loading = false
-          this.data = data
+          this.data = data.records
           this.pagination = pagination
         })
       },
