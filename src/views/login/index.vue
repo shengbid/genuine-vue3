@@ -1,39 +1,91 @@
 <template>
   <div class="login-container">
     <a-row>
-      <a-col :xs="0" :md="0" :sm="12" :lg="14" :xl="16"></a-col>
-      <a-col :xs="24" :sm="24" :md="12" :lg="10" :xl="6">
+      <a-col :xs="0" :md="0" :sm="0" :lg="10" :xl="16"></a-col>
+      <a-col :xs="24" :sm="24" :md="14" :lg="14" :xl="8">
         <div class="login-container-form">
-          <div class="login-container-hello">hello!</div>
-          <div class="login-container-title">欢迎来到 {{ title }}</div>
-          <a-form :model="form" @submit="handleSubmit" @submit.prevent>
-            <a-form-item>
-              <a-input v-model:value="form.userAccount" placeholder="Username">
-                <template v-slot:prefix>
-                  <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
-                </template>
-              </a-input>
-            </a-form-item>
-            <a-form-item>
-              <a-input
-                v-model:value="form.userPwd"
-                type="password"
-                placeholder="Password"
-              >
-                <template v-slot:prefix>
-                  <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
-                </template>
-              </a-input>
-            </a-form-item>
-            <a-form-item>
-              <a-button
-                type="primary"
-                html-type="submit"
-              >
-                登录
-              </a-button>
-            </a-form-item>
-          </a-form>
+          <a-tabs v-model:activeKey="activeKey" :centered="true">
+            <a-tab-pane key="1" tab="登录">
+              <a-form :model="form" @submit="handleSubmit" @submit.prevent>
+                <a-form-item>
+                  <a-input v-model:value="form.userAccount" placeholder="账号">
+                    <template v-slot:prefix>
+                      <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                    </template>
+                  </a-input>
+                </a-form-item>
+                <a-form-item>
+                  <a-input
+                    v-model:value="form.userPwd"
+                    type="password"
+                    placeholder="密码"
+                  >
+                    <template v-slot:prefix>
+                      <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                    </template>
+                  </a-input>
+                </a-form-item>
+                <a-form-item>
+                  <a-button class="sub-btn" type="primary" html-type="submit">登录</a-button>
+                </a-form-item>
+              </a-form>
+            </a-tab-pane>
+            <a-tab-pane key="2" tab="注册" force-render>
+              <a-form ref="formRef" :model="registerForm" @finish="toRegister">
+                <a-form-item
+                  name="email"
+                  :rules="[{ required: true, message: '请输入邮箱!' }]"
+                >
+                  <a-input
+                    v-model:value="registerForm.email"
+                    placeholder="邮箱"
+                  >
+                    <template v-slot:prefix>
+                      <MailOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                    </template>
+                  </a-input>
+                </a-form-item>
+                <a-row :gutter="2">
+                  <a-col :span="14">
+                    <a-form-item
+                      name="code"
+                      :rules="[{ required: true, message: '请输入验证码!' }]"
+                    >
+                      <a-input
+                        v-model:value="registerForm.code"
+                        placeholder="验证码"
+                      />
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="10">
+                    <a-button
+                      class="code-btn"
+                      @click="getCode"
+                      :disabled="count < 60"
+                    >
+                      获取验证码
+                    </a-button>
+                  </a-col>
+                </a-row>
+                <a-form-item
+                  name="password"
+                  :rules="[{ required: true, message: '请输入密码!' }]"
+                >
+                  <a-input
+                    v-model:value="registerForm.password"
+                    placeholder="密码"
+                  >
+                    <template v-slot:prefix>
+                      <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                    </template>
+                  </a-input>
+                </a-form-item>
+                <a-form-item>
+                  <a-button class="sub-btn" type="primary" html-type="submit">提交</a-button>
+                </a-form-item>
+              </a-form>
+            </a-tab-pane>
+          </a-tabs>
         </div>
       </a-col>
     </a-row>
@@ -47,13 +99,20 @@
 <script>
   import { dependencies, devDependencies } from '*/package.json'
   import { mapActions, mapGetters } from 'vuex'
-  import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+  import {
+    UserOutlined,
+    LockOutlined,
+    MailOutlined,
+  } from '@ant-design/icons-vue'
+  import { getFakeCaptcha, register } from '@/api/user'
+  import { message } from 'ant-design-vue'
 
   export default {
     name: 'Login',
     components: {
       UserOutlined,
       LockOutlined,
+      MailOutlined,
     },
     data() {
       return {
@@ -61,9 +120,16 @@
           userAccount: '',
           userPwd: '',
         },
+        registerForm: {
+          email: '',
+          code: '',
+          password: '',
+        },
         redirect: undefined,
         dependencies: dependencies,
         devDependencies: devDependencies,
+        count: 60,
+        activeKey: '1',
       }
     },
     computed: {
@@ -90,9 +156,30 @@
           ? '/'
           : this.redirect
       },
+      // 登录
       async handleSubmit() {
         await this.login(this.form)
         await this.$router.push(this.handleRoute())
+      },
+      // 注册
+      async toRegister() {
+        await register(this.registerForm)
+        await this.$router.push(this.handleRoute())
+      },
+      // 获取验证码
+      async getCode() {
+        console.log(this.$refs.formRef)
+        await this.$refs.formRef.validateFields(['email'])
+        const timer = setInterval(() => {
+          if (this.count > 0) {
+            this.count--
+          } else {
+            clearInterval(timer)
+            this.count = 60
+          }
+        }, 1000)
+        await getFakeCaptcha({ toEmail: this.registerForm.email })
+        message.success('验证码发送成功')
       },
     },
   }
@@ -139,10 +226,17 @@
     .ant-input {
       height: 35px;
     }
-    .ant-btn {
+    .sub-btn {
       width: 100%;
       height: 45px;
       border-radius: 99px;
+    }
+    .code-btn {
+      height: 35px;
+    }
+    .ant-tabs-tab-btn {
+      color: #fff;
+      font-weight: bold;
     }
   }
 </style>

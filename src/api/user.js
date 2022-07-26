@@ -31,7 +31,7 @@ export function getUserInfo(accessToken) {
   return new Promise((reslove) => {
     reslove({
       data: {
-        username: '管理员',
+        username: localStorage.getItem('username') || '管理员',
         avatar: '',
       },
     })
@@ -47,7 +47,7 @@ export function logout(data) {
   })
 }
 // 获取验证码
-export function getFakeCaptcha(params) {
+export async function getFakeCaptcha(params) {
   return request({
     url: '/email/sendSimpleEmail',
     params,
