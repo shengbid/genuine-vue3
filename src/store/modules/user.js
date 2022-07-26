@@ -71,6 +71,7 @@ const actions = {
   async login({ commit }, userInfo) {
     const { data } = await login(userInfo)
     const accessToken = data[tokenName]
+    localStorage.setItem('username', data.name)
     if (accessToken) {
       commit('setAccessToken', accessToken)
       const hour = new Date().getHours()
@@ -98,7 +99,7 @@ const actions = {
    * @param {*} { commit, dispatch, state }
    * @returns
    */
-  async getUserInfo({ commit, dispatch, state }) {
+  async getUserInfo({ commit, state }) {
     const { data } = await getUserInfo(state.accessToken)
     if (!data) {
       message.error(`验证失败，请重新登录...`)
